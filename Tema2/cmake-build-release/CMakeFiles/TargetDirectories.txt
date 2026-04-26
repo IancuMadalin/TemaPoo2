@@ -1,0 +1,3 @@
+C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/cmake-build-release/CMakeFiles/Tema2.dir
+C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/cmake-build-release/CMakeFiles/edit_cache.dir
+C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/cmake-build-release/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,9 @@
+A Strike 5 1
+A Bash 10 1
+A Quick_Strikes 3 2
+S Fireball 20 1 10
+S Life_Drain 5 1 10
+M Quick_Sip 5
+A Claw_Strike 4 1
+A Triple_Slashes 7 3
+S Piercing_Icicle 15 1 5

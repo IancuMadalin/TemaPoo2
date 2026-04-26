@@ -1,0 +1,26 @@
+[
+{
+  "directory": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.3\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Tema2.dir\\main.cpp.obj -c C:\\Users\\40799\\Desktop\\Facultate\\Sem2\\POO\\Tema2\\main.cpp",
+  "file": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/main.cpp",
+  "output": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/CMakeFiles/Tema2.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.3\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Tema2.dir\\Card.cpp.obj -c C:\\Users\\40799\\Desktop\\Facultate\\Sem2\\POO\\Tema2\\Card.cpp",
+  "file": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/Card.cpp",
+  "output": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/CMakeFiles/Tema2.dir/Card.cpp.obj"
+},
+{
+  "directory": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.3\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Tema2.dir\\cardCollection.cpp.obj -c C:\\Users\\40799\\Desktop\\Facultate\\Sem2\\POO\\Tema2\\cardCollection.cpp",
+  "file": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/cardCollection.cpp",
+  "output": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/CMakeFiles/Tema2.dir/cardCollection.cpp.obj"
+},
+{
+  "directory": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2",
+  "command": "C:\\PROGRA~1\\JETBRA~1\\CLION2~1.3\\bin\\mingw\\bin\\G__~1.EXE -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\Tema2.dir\\entity.cpp.obj -c C:\\Users\\40799\\Desktop\\Facultate\\Sem2\\POO\\Tema2\\entity.cpp",
+  "file": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/entity.cpp",
+  "output": "C:/Users/40799/Desktop/Facultate/Sem2/POO/Tema2/CMakeFiles/Tema2.dir/entity.cpp.obj"
+}
+]

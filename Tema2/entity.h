@@ -10,8 +10,10 @@
 #include "cards.h"
 
 
+class Monster;
+
 class Entity {
-    protected:
+    public:
     std::string name;
     int max_hp;
     int hp;
@@ -27,7 +29,7 @@ class Entity {
 };
 
 class Player: public Entity {
-    protected:
+    public:
     int lvl;
     int money;
     std::vector<Card*> deck;
@@ -35,6 +37,10 @@ class Player: public Entity {
     public:
     Player();
     Player(std::string name,int max_hp,int max_mana);
+    Player(Player & other);
+    Player& operator=(const Player other);
+    friend void swap(Player& first, Player& second) noexcept;
+
     ~Player();
 
     void addCardToDeck(Card * cardTemplate);
@@ -42,6 +48,11 @@ class Player: public Entity {
     void showHand() const;
     void takeDamage(int dmg);
     void startTurn(int cardsDrawn);
+    void playCard(Monster &target, const Attack& card);
+    void playCard(Monster &target, const Spell& card);
+    void playCard(Monster &target, const Mana& card);
+    void playAndReturnToDeck(Monster &target,int handIndex);
+    void clearHand();
 
     void death();
 };

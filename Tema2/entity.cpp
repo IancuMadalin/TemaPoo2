@@ -15,23 +15,51 @@ Entity::Entity(): name(""),max_hp(0),hp(0),max_mana(0),mana(0) {}
 Entity::Entity(std::string name, int max_hp, int max_mana): name(name),max_hp(max_hp),hp(max_hp),max_mana(max_mana),mana(0) {}
 Entity::Entity(Entity &other):name(other.name),max_hp(other.max_hp),hp(other.hp),
                                 max_mana(other.max_mana),mana(other.mana){}
-Entity::~Entity() {
-
-}
+Entity::~Entity() {}
 
 Player::Player():Entity("Red",10,0),lvl(1),money(0),deck({}),hand({}){}
 
 Player::Player(std::string name, int max_hp, int max_mana): Entity(name,max_hp,max_mana),lvl(1),money(0),deck({}),hand({}) {}
 
+Player::Player(Player &other):Entity(other),lvl(other.lvl),money(other.money) {
+    for (Card* c : other.deck) {
+        this->deck.push_back(c->copy());
+    }
+    for (Card* c : other.hand) {
+        this->hand.push_back(c->copy());
+    }
+}
+
+void swap(Player& first, Player& second) noexcept {
+    using std::swap;
+    swap(first.name, second.name);
+    swap(first.hp, second.hp);
+    swap(first.max_hp, second.max_hp);
+    swap(first.mana, second.mana);
+    swap(first.max_mana, second.max_mana);
+    swap(first.lvl, second.lvl);
+    swap(first.money, second.money);
+    swap(first.deck, second.deck);
+    swap(first.hand, second.hand);
+}
+
+Player& Player::operator=(Player other) {
+    swap(*this, other);
+    return *this;
+}
+
 Player::~Player() {
     for (Card* card : deck) {
+        delete card;
+    }
+    for (Card* card : hand) {
         delete card;
     }
 }
 
 void Player::addCardToDeck(Card *cardTemplate) {
     if (cardTemplate != nullptr) {
-        deck.push_back(cardTemplate->clone());
+        deck.push_back(cardTemplate->copy());
     }
 }
 
@@ -43,7 +71,7 @@ void Player::showDeck() const {
     else {
         for (auto i : deck)
             {
-        i->display();
+        i->print();
             std::cout << "---------------------------\n";
             }
     }
@@ -55,7 +83,7 @@ void Player::showHand() const {
     }
     else {
         for (auto i : hand) {
-            i->display();
+            i->print();
             std::cout << "---------------------------\n";
         }
     }
@@ -77,6 +105,68 @@ void Player::startTurn(int cardsDrawn) {
         cardsDrawn--;
     }
 }
+
+void Player::playCard(Monster &target, const Attack& card) {
+    int hits = card.get_hits();
+    int dmg = card.get_dmg();
+    for (int i = 0; i < hits; i++) {
+        target.takeDamage(dmg);
+    }
+}
+
+void Player::playCard(Monster &target, const Spell& card) {
+    int cost = card.get_cost();
+    int dmg = card.get_dmg();
+    int hits = card.get_hits();
+    if (cost>this->mana) {
+        std::cout << "Not enough mana\n";
+    }
+    else {
+        this->mana -= cost;
+        for (int i = 0; i < hits; i++) {
+            target.takeDamage(dmg);
+        }
+    }
+}
+
+void Player::playCard(Monster &target, const Mana& card) {
+    int gain = card.get_gain();
+    this->mana += gain;
+    if (this->mana > this->max_mana) {
+        this->mana = this->max_mana;
+    }
+}
+
+void Player::playAndReturnToDeck(Monster &target, int handIndex) {
+    if (handIndex < 0 || handIndex >= hand.size()) {
+        std::cout<<"Not a valid index\n";
+        return;
+    }
+    Card* card = hand[handIndex];
+    if (Attack* a = dynamic_cast<Attack*>(card) ) {
+        playCard(target,*a);
+    }
+    else {
+        if (Spell* s = dynamic_cast<Spell*>(card)) {
+            playCard(target,*s);
+        }
+        else {
+            if (Mana* m = dynamic_cast<Mana*>(card)) {
+                playCard(target,*m);
+            }
+        }
+    }
+    deck.push_back(card);
+    hand.erase(hand.begin() + handIndex);
+}
+
+void Player::clearHand() {
+    for (Card* card : hand) {
+        deck.push_back(card);
+    }
+    hand.clear();
+}
+
 void Player::death() {
     std::cout << "--- " << name << "'s Death ---" << std::endl;
     std::cout << "ahhahahahahhaa Game over";
@@ -100,5 +190,5 @@ void Monster::takeDamage(int dmg) {
 }
 void Monster::death() {
     std::cout << "--- " << name << "'s Death ---" << std::endl;
-    std::cout << "ahhahahahahahaa he ded";
+    std::cout << "Monster defeated\n";
 }

@@ -19,7 +19,12 @@ class Card {
 
     void set_name(std::string const &name);
     void set_id(int id);
+    // --- NVI: PUBLIC NON-VIRTUAL INTERFACE ---
+    void print() const;
+    Card* copy() const;
 
+    protected:
+    // --- NVI: PROTECTED VIRTUAL IMPLEMENTATION ---
     virtual void display() const = 0;
     virtual Card* clone() const = 0;
 };
@@ -40,8 +45,9 @@ class Attack: public Card{
     void set_dmg(int dmg);
     void set_hits(int i);
 
-    void display() const;
-    Card* clone() const;
+protected:
+    void display() const override;
+    Card* clone() const override;
 };
 
 class Spell: public Card {
@@ -61,9 +67,9 @@ class Spell: public Card {
     void set_dmg(int dmg);
     void set_hits(int i);
     void set_cost(int cost);
-
-    void display() const;
-    Card* clone() const;
+protected:
+    void display() const override;
+    Card* clone() const override;
 };
 
 class Mana: public Card {
@@ -77,9 +83,9 @@ public:
     int get_gain() const;
 
     void set_gain(int gain);
-
-    void display() const;
-    Card* clone() const;
+protected:
+    void display() const override;
+    Card* clone() const override;
 
 };
 #endif //TEMA2_CARDS_H

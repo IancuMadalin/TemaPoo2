@@ -17,6 +17,18 @@ std::string Card::get_name() const { return name;}
 void Card::set_name(std::string  const &name) { this->name=name;}
 void Card::set_id(int const id) { this->id=id;}
 
+// NVI IMPLEMENTATION:
+// This function is public. It ensures the "display" logic always starts here.
+void Card::print() const {
+    display(); // Calls the protected virtual function
+}
+
+// NVI IMPLEMENTATION:
+// This function is public. It ensures the "clone" logic always starts here.
+Card* Card::copy() const {
+    return clone(); // Calls the protected virtual function
+}
+
 Attack::Attack(): dmg(0),hits(0) {}
 Attack::Attack(std::string name, const int id, const int dmg, const int i):Card(std::move(name),id),dmg(dmg), hits(i) {}
 Attack::Attack(Attack const &other): Card(other),dmg(other.dmg),hits(other.hits) {}

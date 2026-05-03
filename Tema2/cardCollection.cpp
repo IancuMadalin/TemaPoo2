@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 
 CardCompedium::CardCompedium() {
     // We leave this empty for now; we'll call loadCardsFromFile manually
@@ -21,32 +22,47 @@ CardCompedium::~CardCompedium() {
 }
 
 void CardCompedium::loadCardsFromFile(std::string &fileName) {
-    std::ifstream file(fileName);
-    char type;
-    std::string name;
-    int id=1,dmg,hits,cost,gain;
-    while (file>>type) {
-        if (type == 'A') {
-            file>>name>>dmg>>hits;
-            allCards[id] = new Attack(name,id,dmg,hits);
-            id++;
+    try {
+        std::ifstream file(fileName);
+
+        // 1. Throw the exception if the file fails to open
+        if (!file.is_open()) {
+            throw std::runtime_error("Error: Could not open file " + fileName);
         }
-        if (type == 'S') {
-            file>>name>>dmg>>hits>>cost;
-            allCards[id] = new Spell(name,id,dmg,hits,cost);
-            id++;
+
+        char type;
+        std::string name;
+        int id = 1, dmg, hits, cost, gain;
+
+        while (file >> type) {
+            if (type == 'A') {
+                file >> name >> dmg >> hits;
+                allCards[id] = new Attack(name, id, dmg, hits);
+                id++;
+            }
+            else if (type == 'S') {
+                file >> name >> dmg >> hits >> cost;
+                allCards[id] = new Spell(name, id, dmg, hits, cost);
+                id++;
+            }
+            else if (type == 'M') {
+                file >> name >> gain;
+                allCards[id] = new Mana(name, id, gain);
+                id++;
+            }
         }
-        if (type == 'M') {
-            file>>name>>gain;
-            allCards[id] = new Mana(name,id,gain);
-            id++;
-        }
+    }
+    catch (const std::exception &e) {
+        // 2. Catch the exception immediately so the program doesn't crash
+        std::cout << "[CardCompedium Warning] " << e.what() << "\n";
+        std::cout << "Continuing execution with an empty compendium.\n\n";
     }
 }
 
+
 Card *CardCompedium::createCard(int id) {
     if (allCards.find(id) != allCards.end()) {
-        return allCards[id]->clone(); // Return a copy for the player to use
+        return allCards[id]->copy(); // Return a copy for the player to use
     }
     return nullptr; // Card ID not found
 }
@@ -57,7 +73,7 @@ std::ostream& operator<<(std::ostream& os, const CardCompedium& x) {
     for (auto const& [id, cardPtr] : x.allCards) {
         if (cardPtr != nullptr) {
             // We call the virtual display() method you already wrote
-            cardPtr->display();
+            cardPtr->print();
             os << "---------------------------\n";
         }
     }

@@ -6,21 +6,21 @@ Un joc de tip Deck Builder, in care player-ul colecteaza cărți pe care le folo
 1. Librării utilizate și scopul lor
 Proiectul folosește o serie de librării standard din C++ (STL) pentru a asigura o execuție eficientă și organizată:
 
-<iostream>: Folosită pentru interacțiunea cu utilizatorul prin consolă (citirea opțiunilor din terminal via std::cin și afișarea stării jocului via std::cout).
+iostream: Folosită pentru interacțiunea cu utilizatorul prin consolă (citirea opțiunilor din terminal via std::cin și afișarea stării jocului via std::cout).
 
-<string>: Folosită pentru manipularea eficientă a textului (numele cărților, numele entităților etc.).
+string: Folosită pentru manipularea eficientă a textului (numele cărților, numele entităților etc.).
 
-<vector>: Folosită în clasa Player și Monster pentru a gestiona dinamic pachetul de cărți (deck) și cărțile din mână (hand).
+vector: Folosită în clasa Player și Monster pentru a gestiona dinamic pachetul de cărți (deck) și cărțile din mână (hand).
 
-<map>: Utilizată în CardCompedium pentru a stoca toate cărțile disponibile în joc sub forma unei colecții indexate (std::map<int, Card*>), unde cheia este ID-ul cărții.
+map: Utilizată în CardCompedium pentru a stoca toate cărțile disponibile în joc sub forma unei colecții indexate (std::map<int, Card*>), unde cheia este ID-ul cărții.
 
-<fstream>: Folosită în CardCompedium pentru citirea datelor din fișiere text externe (cards.txt), permițând popularea bazei de date cu cărți la pornirea aplicației.
+fstream: Folosită în CardCompedium pentru citirea datelor din fișiere text externe (cards.txt), permițând popularea bazei de date cu cărți la pornirea aplicației.
 
-<random>: Folosită pentru generarea numerelor aleatorii (prin std::mt19937 și std::uniform_int_distribution) pentru a trage cărți aleatorii din deck în timpul luptei.
+random: Folosită pentru generarea numerelor aleatorii (prin std::mt19937 și std::uniform_int_distribution) pentru a trage cărți aleatorii din deck în timpul luptei.
 
-<stdexcept>: Folosită pentru gestionarea erorilor prin mecanismul de excepții (ex. std::runtime_error atunci când fișierul de cărți nu poate fi deschis).
+stdexcept: Folosită pentru gestionarea erorilor prin mecanismul de excepții (ex. std::runtime_error atunci când fișierul de cărți nu poate fi deschis).
 
-<utility>: Folosită pentru optimizarea copierilor prin std::move și operații de tip std::swap.
+utility: Folosită pentru optimizarea copierilor prin std::move și operații de tip std::swap.
 
 2. Ierarhia Claselor
 Proiectul este structurat pe baza a două ierarhii principale de clase, demonstrând utilizarea corectă a programării orientate pe obiecte (POO).

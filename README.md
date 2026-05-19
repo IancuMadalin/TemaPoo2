@@ -1,85 +1,97 @@
-# TemaPoo2
-Repo pt tema2
+# Tema 2 – Card Game în C++
 
-Un joc de tip Deck Builder, in care player-ul colecteaza cărți pe care le folosește pentru a învinge diferiți inamici (WIP)
+## Descriere generală
 
-1. Librării utilizate și scopul lor
-Proiectul folosește o serie de librării standard din C++ (STL) pentru a asigura o execuție eficientă și organizată:
+Acest proiect reprezintă implementarea unui joc de cărți bazat pe turnuri, scris în C++ cu accent pe principiile programării orientate pe obiecte. Jucătorul controlează un personaj care trebuie să înfrunte o serie de monștri într-o succesiune de lupte, folosind un pachet de cărți pe care îl poate îmbunătăți între runde prin intermediul unui magazin. Proiectul a fost structurat cu grijă pentru a reflecta concepte fundamentale din OOP: ierarhii de clase, polimorfism, gestionarea memoriei pe heap, și șabloane de proiectare (design patterns).
 
-iostream: Folosită pentru interacțiunea cu utilizatorul prin consolă (citirea opțiunilor din terminal via std::cin și afișarea stării jocului via std::cout).
+---
 
-string: Folosită pentru manipularea eficientă a textului (numele cărților, numele entităților etc.).
+## Structura proiectului
 
-vector: Folosită în clasa Player și Monster pentru a gestiona dinamic pachetul de cărți (deck) și cărțile din mână (hand).
+Codul este împărțit în mai multe module cu responsabilități clare:
 
-map: Utilizată în CardCompedium pentru a stoca toate cărțile disponibile în joc sub forma unei colecții indexate (std::map<int, Card*>), unde cheia este ID-ul cărții.
+- **cards.h / Card.cpp** — definește ierarhia de cărți
+- **cardCollection.h / cardCollection.cpp** — gestionează baza de date de cărți
+- **cardFactory.h** — centralizează crearea obiectelor de tip carte
+- **entity.h / entity.cpp** — definește entitățile din joc (jucător, monstru, magazin)
+- **main.cpp** — punctul de intrare și logica principală a jocului
 
-fstream: Folosită în CardCompedium pentru citirea datelor din fișiere text externe (cards.txt), permițând popularea bazei de date cu cărți la pornirea aplicației.
+---
 
-random: Folosită pentru generarea numerelor aleatorii (prin std::mt19937 și std::uniform_int_distribution) pentru a trage cărți aleatorii din deck în timpul luptei.
+## Ierarhia de cărți și NVI
 
-stdexcept: Folosită pentru gestionarea erorilor prin mecanismul de excepții (ex. std::runtime_error atunci când fișierul de cărți nu poate fi deschis).
+Clasa de bază `Card` definește interfața comună pentru toate tipurile de cărți din joc. Aceasta folosește pattern-ul **NVI (Non-Virtual Interface)**: metodele publice `print()` și `copy()` sunt non-virtuale și apelează intern metodele protejate virtuale `display()` și `clone()`. Avantajul acestei abordări este că logica de control rămâne în clasa de bază, iar subclasele nu pot fi apelate direct din exterior fără a trece prin interfața definită.
 
-utility: Folosită pentru optimizarea copierilor prin std::move și operații de tip std::swap.
+Cele trei tipuri concrete de cărți sunt:
 
-2. Ierarhia Claselor
-Proiectul este structurat pe baza a două ierarhii principale de clase, demonstrând utilizarea corectă a programării orientate pe obiecte (POO).
+- **Attack** — carte de atac cu daune și număr de lovituri
+- **Spell** — vrajă cu daune, lovituri și un cost de mana
+- **Mana** — carte care regenerează mana jucătorului sau monstrului
 
-A. Ierarhia Cărților (Card)
-Toate cărțile din joc derivă dintr-o clasă de bază abstractă, care dictează comportamentul comun.
+Fiecare subclasă implementează `display()` și `clone()`, permițând afișarea și copierea polimorfică corectă prin pointeri de tip `Card*`. Copierea profundă este esențială deoarece cărțile sunt alocate pe heap și gestionate manual.
 
-Card (Clasă de bază abstractă): Conține datele fundamentale ale unei cărți: name (numele) și id (identificatorul unic). Are metode pur virtuale pentru afișare și clonare.
+---
 
-Attack (Clasă derivată): Reprezintă o carte de atac fizic. Are atribute suplimentare precum dmg (daune) și hits (numărul de lovituri).
+## Gestionarea memoriei
 
-Spell (Clasă derivată): Reprezintă o carte de tip vrajă. Pe lângă daune și lovituri, introduce atributul cost (costul de mană necesar utilizării).
+Un aspect important al proiectului este gestionarea corectă a memoriei dinamice. Fiecare entitate (jucător sau monstru) deține pointeri către cărțile din pachet și din mână, pe care le alocă și le eliberează în destructori. Clasa `Player` implementează și **operatorul de atribuire prin copiere** folosind idiomul copy-and-swap, garantând că nu există scurgeri de memorie sau copieri incomplete în cazul auto-atribuirii.
 
-Mana (Clasă derivată): Reprezintă o carte de utilitate care îi permite jucătorului să își refacă resursele. Conține atributul mana_gain (cantitatea de mană primită).
+Magazinul (`Shop`) deține pointeri către cărțile originale din compendiu — nu copii — și prin urmare nu le eliberează în destructor. Această distincție dintre proprietar și observator este importantă pentru a evita double-free.
 
-B. Ierarhia Entităților (Entity)
-Modelează personajele care pot lua parte la luptă.
+---
 
-Entity (Clasă de bază abstractă): Definește atributele comune tuturor personajelor (name, hp, max_hp, mana, max_mana) și comportamentul abstract de primire a daunelor prin metoda pur virtuală takeDamage(int dmg).
+## Design Pattern 1: Singleton — CardCompedium
 
-Player (Clasă derivată): Reprezintă utilizatorul. Deține un pachet de cărți (deck), o mână curentă de cărți (hand), nivel (lvl) și bani (money). Implementează funcționalitățile de tragere a cărților, jucare a cărților și gestionare a inventarului.
+`CardCompedium` este clasa care funcționează ca o bază de date centrală pentru toate cărțile din joc. Aceasta este implementată folosind pattern-ul **Singleton**, care garantează că există o singură instanță a bazei de date pe toată durata execuției programului.
 
-Monster (Clasă derivată): Reprezintă inamicul. Are o recompensă în bani la înfrângere (money_reward) și un comportament specific la moarte.
+Implementarea respectă cele trei reguli ale Singleton-ului:
 
-3. Tehnici de Programare Utilizate
-Proiectul pune în valoare concepte avansate de C++ și bune practici în ingineria software:
+1. **Constructor privat** — nimeni din exterior nu poate instanția direct clasa
+2. **Ștergerea constructorului de copiere și a operatorului de atribuire** — previne duplicarea instanței
+3. **Metodă statică `getInstance()`** — singura modalitate de a accesa instanța, care este creată lazy (la primul apel)
 
-1. Polimorfism și Funcții Virtuale
-Clasele Card și Entity definesc metode virtuale pure (virtual void display() = 0;, virtual void takeDamage(int dmg) = 0;), transformându-le în interfețe (clase abstracte). Acest lucru garantează că fiecare clasă derivată își implementează propria logică specifică, iar motorul de luptă poate apela aceste funcții polimorfic, fără să îi pese de tipul exact al obiectului în acel moment.
+```cpp
+static CardCompedium& getInstance() {
+    static CardCompedium instance;
+    return instance;
+}
+```
 
-2. NVI (Non-Virtual Interface Idiom)
-În clasa Card, interfața publică este separată de implementarea virtuală:
+Această abordare este thread-safe în C++11 și ulterior, deoarece inițializarea variabilelor statice locale este garantată a fi atomică de standard. În `main.cpp`, accesul se face prin `CardCompedium::getInstance()`, eliminând necesitatea unei variabile globale explicite.
 
-Funcțiile publice print() și copy() sunt non-virtuale.
+---
 
-Acestea apelează intern funcțiile protejate virtuale display() și clone().
+## Design Pattern 2: Factory — CardFactory
 
-Scop: Acest idiom oferă un control mai bun asupra modului în care funcțiile virtuale sunt apelate și permite adăugarea de cod înainte/după execuția metodei derivate, dacă este necesar.
+Clasa `CardFactory` implementează pattern-ul **Factory Method** pentru crearea obiectelor de tip carte. Înainte de introducerea acestui pattern, metoda `loadCardsFromFile` din `CardCompedium` conținea direct apeluri `new Attack(...)`, `new Spell(...)`, `new Mana(...)`, cuplând strâns logica de parsing cu logica de creare a obiectelor.
 
-3. Rule of Three & Memory Management
-Deoarece cărțile sunt alocate dinamic pe heap (folosind pointeri Card*), proiectul respectă cu strictețe managementul memoriei:
+Prin extragerea creării într-o metodă statică centralizată:
 
-Destructori virtuali: Clasa Card are un destructor virtual (virtual ~Card();) pentru a preveni pierderile de memorie (memory leaks) atunci când un obiect derivat este șters printr-un pointer de clasă de bază.
+```cpp
+static Card* create(char type, std::string name, int id,
+                    int dmg=0, int hits=0, int cost=0, int gain=0);
+```
 
-Deep Copying: Constructorul de copiere al clasei Player realizează o clonare profundă a cărților din deck și hand apelând metoda copy().
+se obțin mai multe avantaje: dacă se adaugă un nou tip de carte în viitor, modificarea se face într-un singur loc. De asemenea, codul din `loadCardsFromFile` devine mai curat și mai ușor de citit, concentrându-se pe parsarea fișierului și nu pe detaliile de construcție ale obiectelor.
 
-Copy and Swap Idiom: Clasa Player implementează operatorul de atribuire (operator=) prin tehnica Copy and Swap, asigurând siguranță la excepții și evitând duplicarea codului.
+---
 
-4. RTTI & Dynamic Casting
-În metoda Player::playAndReturnToDeck, se utilizează dynamic_cast pentru a identifica în siguranță, la rulare, tipul exact al cărții din mână (Attack*, Spell* sau Mana*) și a aplica efectul corespunzător asupra monstrului.
+## Entitățile și logica de luptă
 
-5. Încapsularea Exception Handling (Tratarea Excepțiilor)
-În CardCompedium::loadCardsFromFile, citirea din fișier este protejată de un bloc try-catch:
+Clasa abstractă `Entity` stă la baza ierarhiei de entități și definește atributele comune: nume, puncte de viață, mana. Metoda `takeDamage()` este pur virtuală, lăsând subclaselor libertatea de a defini comportamentul la primirea daunelor, inclusiv apelul metodei `death()`.
 
-Dacă fișierul cu cărți nu există sau are probleme la deschidere, se aruncă o excepție de tip std::runtime_error.
+`Player` și `Monster` extind `Entity` și implementează logica specifică de joc: tragerea cărților din pachet în mână (`startTurn`), jucarea unei cărți cu efect asupra adversarului (`playAndReturnToDeck`), și returnarea cărților în pachet după utilizare. Monștrii joacă automat o carte aleasă aleatoriu, în timp ce jucătorul interacționează prin consolă.
 
-Excepția este prinsă imediat în cadrul aceleiași funcții, prevenind crash-ul aplicației. Jocul afișează un avertisment și continuă rularea normală (cu un compendiu gol), oferind stabilitate codului.
+Selectarea tipului de carte la momentul jucării se face prin `dynamic_cast`, o soluție pragmatică dată fiind structura ierarhiei și nevoia de a apela overload-ul corect al metodei `playCard`.
 
-6. Supraîncărcarea Operatorilor
-operator<<: Supraîncărcat ca funcție friend pentru clasa CardCompedium pentru a permite afișarea întregii librării de cărți direct prin fluxul std::cout << CC;.
+---
 
-Review: O sa îi fac review lui Ivănuș Victor
+## Magazinul
+
+Clasa `Shop` oferă jucătorului posibilitatea de a adăuga o carte nouă în pachet între lupte. La construcție, magazinul alege aleatoriu trei cărți din compendiu și le prezintă jucătorului. Cărțile afișate sunt pointeri către originalele din `CardCompedium` — nu copii — iar la cumpărare, `addCardToDeck` face o copie profundă înainte de a o adăuga în pachetul jucătorului.
+
+---
+
+## Concluzie
+
+Proiectul acoperă o gamă largă de concepte C++ aplicate într-un context practic și coerent: polimorfism prin pointeri la clasa de bază, NVI pentru encapsularea comportamentului virtual, gestionarea manuală a memoriei cu destructori și copy-and-swap, și două șabloane de proiectare clasice — Singleton și Factory — integrate natural în arhitectura aplicației. Codul este structurat modular, cu separare clară între responsabilități, și poate fi extins relativ ușor cu noi tipuri de cărți, entități sau mecanici de joc.

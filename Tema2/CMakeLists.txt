@@ -9,4 +9,5 @@ add_executable(Tema2 main.cpp
         entity.h
         cardCollection.h
         cardCollection.cpp
-        entity.cpp)
+        entity.cpp
+        cardFactory.h)

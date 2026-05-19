@@ -11,15 +11,30 @@
 #include "cards.h"
 
 class CardCompedium {
-public: // make protected later
-    std::map<int,Card*> allCards;
-    public:
+private:
+    // SINGLETON: private constructor
+    CardCompedium() {}
+    ~CardCompedium() {
+        for (auto const& [id, cardPtr] : allCards) {
+            delete cardPtr;
+        }
+        std::cout << "Database cleaned up successfully.\n";
+    }
 
-    CardCompedium();
-    ~CardCompedium();
+public:
+    // SINGLETON: delete copy constructor and assignment operator
+    CardCompedium(CardCompedium const&) = delete;
+    void operator=(CardCompedium const&) = delete;
+
+    // SINGLETON: the one and only way to get the instance
+    static CardCompedium& getInstance() {
+        static CardCompedium instance;
+        return instance;
+    }
+
+    std::map<int, Card*> allCards;
 
     void loadCardsFromFile(std::string& fileName);
-    Card* createCard(int id);
 
     friend std::ostream& operator<<(std::ostream& os, const CardCompedium& x);
 };

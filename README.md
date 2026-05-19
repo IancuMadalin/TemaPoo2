@@ -1,4 +1,4 @@
-# Tema 2 – Card Game în C++
+# Tema 3 – Card Game în C++
 
 ## Descriere generală
 

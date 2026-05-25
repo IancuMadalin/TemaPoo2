@@ -1,9 +1,12 @@
 #include "cardCollection.h"
 #include "cards.h"
 #include "entity.h"
+#include "rewardObserver.h"
+#include "trader.h"
 #include <iostream>
 #include <random>
 #include <string>
+
 
 using namespace std;
 
@@ -12,6 +15,7 @@ static CardCompedium& CC = CardCompedium::getInstance(); // Aici se stocheaza to
 static random_device r;
 static mt19937 rng(r());
 static uniform_int_distribution<int> d10(1, 10);
+
 
 void fight(Player &p, Monster &enemy) {
   int turn = 1;
@@ -88,6 +92,9 @@ int main() {
   a.addCardToDeck(CC.allCards[2]);
   a.addCardToDeck(CC.allCards[6]);
   a.showDeck();
+
+
+
   
   Monster LVL1("Villager", 10, 1, 10);
   LVL1.addCardToDeck(CC.allCards[1]);
@@ -101,17 +108,31 @@ int main() {
   LVL3.addCardToDeck(CC.allCards[2]);
   LVL3.addCardToDeck(CC.allCards[2]);
   LVL3.addCardToDeck(CC.allCards[3]);
-  
+
+
+  RewardObserver reward1(a, LVL1.money_reward);
+  LVL1.addObserver(&reward1);
+  RewardObserver reward2(a, LVL2.money_reward);
+  LVL2.addObserver(&reward2);
+  RewardObserver reward3(a, LVL3.money_reward);
+  LVL3.addObserver(&reward3);
+
+  Trader<Attack> attackTrader("Bob the Warrior", rng);
+  Trader<Spell> spellTrader("Merlin the Wizard", rng);
+
   fight(a, LVL1);
   if (a.hp > 0) {
     Shop shop1(CC);
     shop1.buyCards(a);
+    traderInteraction(attackTrader, a, CC);
   }
+
   if (a.hp > 0)
     fight(a, LVL2);
   if (a.hp > 0) {
     Shop shop2(CC);
     shop2.buyCards(a);
+    traderInteraction(spellTrader, a, CC);
   }
   if (a.hp > 0)
     fight(a, LVL3);

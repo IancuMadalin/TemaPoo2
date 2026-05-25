@@ -195,6 +195,7 @@ void Monster::takeDamage(int dmg) {
   hp -= dmg;
   if (hp <= 0) {
     death();
+    notifyDeath(name);
   }
 }
 void Monster::death() {

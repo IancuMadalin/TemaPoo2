@@ -6,14 +6,17 @@
 #define TEMA2_ENTITY_H
 #include <string>
 #include <vector>
+#include <type_traits>
+#include <random>
 
 #include "cards.h"
 #include "cardCollection.h"
+#include "observer.h"
 
 class Monster;
 class CardCompedium;
 
-class Entity {
+class Entity : public ISubject {
 public:
   std::string name;
   int max_hp;
@@ -60,7 +63,7 @@ public:
 };
 
 class Monster : public Entity {
-protected:
+public:
   std::vector<Card *> deck;
   std::vector<Card *> hand;
   int money_reward;
@@ -95,4 +98,5 @@ class Shop {
 
   void buyCards(Player &player);
 };
+
 #endif // TEMA2_ENTITY_H

@@ -91,4 +91,3 @@ void Mana::display() const {
 }
 Card *Mana::clone() const { return new Mana(*this); }
 
-// hello there

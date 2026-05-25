@@ -14,6 +14,9 @@ Codul este împărțit în mai multe module cu responsabilități clare:
 - **cardCollection.h / cardCollection.cpp** — gestionează baza de date de cărți
 - **cardFactory.h** — centralizează crearea obiectelor de tip carte
 - **entity.h / entity.cpp** — definește entitățile din joc (jucător, monstru, magazin)
+- **observer.h** — definește interfețele `IObserver` și `ISubject`
+- **rewardObserver.h / rewardObserver.cpp** — implementează recompensa la moartea unui monstru
+- **trader.h** — implementează mecanica de schimb de cărți prin șabloane
 - **main.cpp** — punctul de intrare și logica principală a jocului
 
 ---
@@ -76,6 +79,34 @@ se obțin mai multe avantaje: dacă se adaugă un nou tip de carte în viitor, m
 
 ---
 
+## Design Pattern 3: Observer — RewardObserver
+
+Clasa `Monster` moștenește din `ISubject` (definit în `observer.h`), ceea ce îi permite să notifice observatori înregistrați atunci când moare. Interfața `IObserver` expune o singură metodă virtuală pură, `onDeath()`, pe care orice observator trebuie să o implementeze.
+
+`RewardObserver` este concretizarea acestui pattern: la construcție primește o referință către jucător și suma de bani pe care o va acorda, iar la notificare adaugă recompensa în contul jucătorului.
+
+```cpp
+RewardObserver reward1(a, LVL1.money_reward);
+LVL1.addObserver(&reward1);
+```
+
+Avantajul față de o abordare directă este decuplarea: `Monster` nu știe nimic despre `Player` sau despre recompense — știe doar că trebuie să notifice o listă de observatori. Adăugarea unui nou efect la moartea unui monstru (animație, sunet, quest update) nu necesită modificarea clasei `Monster`.
+
+---
+
+## Design Pattern 4: Template — Trader
+
+Clasa `Trader<T>` este un șablon parametrizat cu tipul de carte pe care îl comercializează. Un `Trader<Attack>` acceptă doar cărți de tip `Attack` la schimb, iar un `Trader<Spell>` doar `Spell`. Verificarea tipului se face la runtime prin `dynamic_cast`, iar dacă jucătorul încearcă să ofere un tip greșit, tranzacția este respinsă.
+
+```cpp
+Trader<Attack> attackTrader("Bob the Warrior", rng);
+Trader<Spell>  spellTrader("Merlin the Wizard", rng);
+```
+
+Mecanica de schimb: jucătorul alege un index din pachet, predă carta respectivă, și primește în schimb o carte aleatorie de același tip din compendiu. Funcția liberă `traderInteraction<T>` încapsulează interacțiunea cu consola, menținând clasa `Trader` curată de orice logică de I/O.
+
+---
+
 ## Entitățile și logica de luptă
 
 Clasa abstractă `Entity` stă la baza ierarhiei de entități și definește atributele comune: nume, puncte de viață, mana. Metoda `takeDamage()` este pur virtuală, lăsând subclaselor libertatea de a defini comportamentul la primirea daunelor, inclusiv apelul metodei `death()`.
@@ -94,4 +125,4 @@ Clasa `Shop` oferă jucătorului posibilitatea de a adăuga o carte nouă în pa
 
 ## Concluzie
 
-Proiectul acoperă o gamă largă de concepte C++ aplicate într-un context practic și coerent: polimorfism prin pointeri la clasa de bază, NVI pentru encapsularea comportamentului virtual, gestionarea manuală a memoriei cu destructori și copy-and-swap, și două șabloane de proiectare clasice — Singleton și Factory — integrate natural în arhitectura aplicației. Codul este structurat modular, cu separare clară între responsabilități, și poate fi extins relativ ușor cu noi tipuri de cărți, entități sau mecanici de joc.
+Proiectul acoperă o gamă largă de concepte C++ aplicate într-un context practic și coerent: polimorfism prin pointeri la clasa de bază, NVI pentru encapsularea comportamentului virtual, gestionarea manuală a memoriei cu destructori și copy-and-swap, și patru șabloane de proiectare clasice — Singleton, Factory, Observer și Template (Trader) — integrate natural în arhitectura aplicației. Codul este structurat modular, cu separare clară între responsabilități, și poate fi extins relativ ușor cu noi tipuri de cărți, entități sau mecanici de joc.
